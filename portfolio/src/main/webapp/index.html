@@ -2,17 +2,59 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>My Portfolio</title>
+    <title>Jacob's Portfolio</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
   <body>
     <div id="content">
-      <h1>My Portfolio</h1>
-      <p>This is my portfolio.</p>
-      <p>Click here to get a random message:</p>
-      <button onclick="addRandomGreeting()">Hello</button>
-      <div id="greeting-container"></div>
+      <div id="about-me">
+        <h1>Hi, I am Jacob. Welcome to my personal portfolio page.</h1>
+        <img src="images/display-pic-home.png" alt="Jacob's display picture" style="width:300px;height:300px;">
+        <h2>I am a student from National University of Singapore (NUS) focusing on software engineer, computer graphics and machine learning.</h2>
+        <h3>I like to explore and learn various parts of technology while challenging myself to code and brainstorm ideas to solve real life problems.</h3>
+      </div>
+      <h3>Below are some of my projects: </h3>
+      <div id="projects">
+          <div id="vr-game">
+            <h4>VR Game: ByStanders (Jan 2018 - May 2018):</h4>
+            <p>
+              A detective game in Virtual Reality (VR) based in 1981.
+              After working hard to become a detective, you are faced with a really challenging crime scene where you will have to explore inside the witnesses' mind to find out hints to solving the crime.
+              Each of them has "weird" characteristics and the hints are hard to find.
+              Ultimately through exploration, you need to produce the actual crime scene.
+              If you manage to get it correct, you will be able to find out the real criminal.
+            </p>
+            <img src="images/vr-intro-overview.gif" alt="VR game's overview">
+          </div>
+          <div id="nus-events">
+            <h4>NUS Events (Aug 2018 - Dec 2018)</h4>
+            <p>
+              There is currently no common platform to collate all the events that is happening in NUS.
+              Therefore, NUSEvents is used as an all-in-one platform to collate all these events happening in NUS.
+              I hope students will be more informed on the day-to-day events that they can attend.
+              Despite the basic functionalities, I also added a calendar function for students to plan their events based on the events they are interested in.
+            </p>
+            <img src="images/nus-events-overview.gif" alt="NUS Event's overview">
+          </div>
+          <div id="health-app">
+            <h4>HPB project: iSoHealthy (June 2017)</h4>
+            <p>
+              Inspired by Singapore HPB Health365 application to reduce diabetes in Singapore.
+              iSoHealthy is designed with the same purpose to encourage people to stay fit in a more user-friendly manner.
+              It provides tips, exercise routines and most importantly, a community.
+              Through user studies, I found out that previous version of Health365 is too cluttered with information and people are reluctant to open the application frequently.
+              The general response is that a family or community of people staying fit together will encourage them to use the application more.
+              Thus, I have built the application based on these feedbacks.
+            </p>
+            <img src="images/health-app-overview.gif" alt="Health App's overview" style="width:30%;height:30%">
+          </div>
+      </div>
+      <div id="random-activity">
+        <h4>Feeling random today? Click here to get a random message:</h4>
+        <button onclick="addRandomGreeting()">Hello</button>
+        <div id="greeting-container"></div>
+      </div>
     </div>
   </body>
 </html>
