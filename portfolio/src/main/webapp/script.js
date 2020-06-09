@@ -26,3 +26,12 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Fetch data servlet to the page.
+ */
+function getDataContent() {
+    fetch('/data').then(response => response.text()).then(data => {
+        document.getElementById('data-servlet').innerText = data;
+    });
+}
