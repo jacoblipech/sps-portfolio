@@ -16,27 +16,37 @@ package com.google.sps.servlets;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /** Servlet that returns comments content. */
 @WebServlet("/comments")
 public class CommentsServlet extends HttpServlet {
 
+  private ArrayList<String> comments = new ArrayList<>();
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    ArrayList<String> comments = new ArrayList<>();
-    comments.add("Nice looking website there Jacob!");
-    comments.add("You need to work on your CSS Jacob.");
-    comments.add("Making good progress~ :)");
-
     String json = convertArrayToJson(comments);
 
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String text = getParameter(request, "text-input", "");
+    // split by enter without empty line
+    String[] lines = text.split("[\\r?\\n]+");
+
+    response.setContentType("text/html;");
+    comments.addAll(Arrays.asList(lines));
+
+    response.sendRedirect("/");
   }
 
   /**
@@ -49,5 +59,17 @@ public class CommentsServlet extends HttpServlet {
     json += gson.toJson(comments);
     json += "}";
     return json;
+  }
+
+  /**
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   */
+  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
   }
 }
