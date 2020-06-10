@@ -35,3 +35,25 @@ function getDataContent() {
         document.getElementById('data-servlet').innerText = data;
     });
 }
+
+/**
+  * Fetch comments servlet to the page.
+  */
+function getCommentsContent() {
+    fetch('/comments').then(response => response.json()).then((myObj) => {
+        const commentsListElement = document.getElementById('comments-servlet');
+        commentsListElement.innerHTML = '';
+        for (i in myObj.comments) {
+            commentsListElement.appendChild(createListElement(myObj.comments[i]));
+        }
+  });
+}
+
+/*
+ * Creates an <li> element containing text. 
+ */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
+}
