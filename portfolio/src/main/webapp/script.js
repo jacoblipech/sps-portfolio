@@ -13,6 +13,13 @@
 // limitations under the License.
 
 /**
+ * Loads comments upon page refreshes.
+ */
+document.addEventListener("DOMContentLoaded", function(){ 
+  getCommentsContent(); 
+});
+
+/**
  * Adds a random greeting to the page.
  */
 function addRandomGreeting() {
@@ -40,11 +47,11 @@ function getDataContent() {
   * Fetch comments servlet to the page.
   */
 function getCommentsContent() {
-    fetch('/comments').then(response => response.json()).then((myObj) => {
+    fetch('/comments').then(response => response.json()).then((commentsJson) => {
         const commentsListElement = document.getElementById('comments-servlet');
         commentsListElement.innerHTML = '';
-        for (i in myObj.comments) {
-            commentsListElement.appendChild(createListElement(myObj.comments[i]));
+        for (i in commentsJson.comments) {
+            commentsListElement.appendChild(createListElement(commentsJson.comments[i]));
         }
   });
 }

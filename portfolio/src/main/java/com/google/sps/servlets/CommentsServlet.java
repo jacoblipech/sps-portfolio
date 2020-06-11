@@ -56,7 +56,7 @@ public class CommentsServlet extends HttpServlet {
    */
   private String getCommentsJson(ArrayList<String> comments) {
     Gson gson = new Gson();
-    return String.format("{ comments: %s }", gson.toJson(comments));
+    return String.format("{ \"comments\": %s }", gson.toJson(comments));
   }
 
   /**
