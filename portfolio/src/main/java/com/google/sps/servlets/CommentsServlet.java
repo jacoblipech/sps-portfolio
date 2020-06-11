@@ -31,7 +31,7 @@ public class CommentsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = convertArrayToJson(comments);
+    String json = getCommentsJson(comments);
 
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -40,25 +40,23 @@ public class CommentsServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String text = getParameter(request, "text-input", "");
-    // split by enter without empty line
-    String[] lines = text.split("[\\r?\\n]+");
+    if (!text.isEmpty()) {
+      // split by enter without empty line
+      String[] lines = text.split("[\\r?\\n]+");
 
-    response.setContentType("text/html;");
-    comments.addAll(Arrays.asList(lines));
+      response.setContentType("text/html;");
+      comments.addAll(Arrays.asList(lines));
+    }
 
     response.sendRedirect("/");
   }
 
   /**
-   * Converts the array list into a JSON string using Gson.
+   * Converts the comments array into a JSON string using Gson.
    */
-  private String convertArrayToJson(ArrayList<String> comments) {
+  private String getCommentsJson(ArrayList<String> comments) {
     Gson gson = new Gson();
-    String json = "{";
-    json += "\"comments\": ";
-    json += gson.toJson(comments);
-    json += "}";
-    return json;
+    return String.format("{ comments: %s }", gson.toJson(comments));
   }
 
   /**
