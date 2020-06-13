@@ -40,12 +40,15 @@ public class CommentsServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String text = getParameter(request, "text-input", "");
-    if (!text.isEmpty()) {
-      // split by enter without empty line
-      String[] lines = text.split("[\\r?\\n]+");
 
-      response.setContentType("text/html;");
-      comments.addAll(Arrays.asList(lines));
+    if (!text.isEmpty()) {
+      long timestamp = System.currentTimeMillis();
+      Entity commentEntity = new Entity("comment");
+
+      commentEntity.setProperty("comment", text);
+      commentEntity.setProperty("timestamp", timestamp);
+
+      dataStore.put(commentEntity);
     }
 
     response.sendRedirect("/");
@@ -54,7 +57,7 @@ public class CommentsServlet extends HttpServlet {
   /**
    * Converts the comments array into a JSON string using Gson.
    */
-  private String getCommentsJson(ArrayList<String> comments) {
+  private String getCommentsJson(List<Comment> comments) {
     Gson gson = new Gson();
     return String.format("{ \"comments\": %s }", gson.toJson(comments));
   }
