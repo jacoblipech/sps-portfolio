@@ -46,9 +46,14 @@ public class CommentsServlet extends HttpServlet {
     for (Entity entity : results.asIterable()) {
       long id = entity.getKey().getId();
       String text = (String) entity.getProperty("comment");
+      String username = (String) entity.getProperty("add ");
       long timestamp = (long) entity.getProperty("timestamp");
 
-      Comment comment = new Comment(id, text, timestamp);
+      if (username.isEmpty()) {
+        username = "Anonymous User";
+      }
+
+      Comment comment = new Comment(id, text, username, timestamp);
       comments.add(comment);
     }
 
@@ -60,12 +65,14 @@ public class CommentsServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String text = getParameter(request, "text-input", "");
+    String username = getParameter(request, "username", "");
 
     if (!text.isEmpty()) {
       long timestamp = System.currentTimeMillis();
       Entity commentEntity = new Entity("comment");
 
       commentEntity.setProperty("comment", text);
+      commentEntity.setProperty("username", username);
       commentEntity.setProperty("timestamp", timestamp);
 
       dataStore.put(commentEntity);
