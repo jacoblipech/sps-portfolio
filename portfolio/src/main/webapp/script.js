@@ -51,7 +51,7 @@ function getCommentsContent() {
         const commentsListElement = document.getElementById('comments-servlet');
         commentsListElement.innerHTML = '';
         for (i in commentsJson.comments) {
-            commentsListElement.appendChild(createListElement(commentsJson.comments[i]));
+            commentsListElement.appendChild(createListElement(commentsJson.comments[i].comment));
         }
   });
 }
