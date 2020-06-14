@@ -46,7 +46,7 @@ public class CommentsServlet extends HttpServlet {
     for (Entity entity : results.asIterable()) {
       long id = entity.getKey().getId();
       String text = (String) entity.getProperty("comment");
-      String username = (String) entity.getProperty("add ");
+      String username = (String) entity.getProperty("username");
       long timestamp = (long) entity.getProperty("timestamp");
 
       if (username.isEmpty()) {
