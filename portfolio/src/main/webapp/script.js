@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(){
  */
 function addRandomGreeting() {
   const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+    ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
 
   // Pick a random greeting.
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
@@ -38,9 +38,9 @@ function addRandomGreeting() {
  * Fetch data servlet to the page.
  */
 function getDataContent() {
-    fetch('/data').then(response => response.text()).then(data => {
-        document.getElementById('data-servlet').innerText = data;
-    });
+  fetch('/data').then(response => response.text()).then(data => {
+    document.getElementById('data-servlet').innerText = data;
+  });
 }
 
 /**
@@ -48,19 +48,20 @@ function getDataContent() {
   */
 function getCommentsContent() {
     fetch('/comments').then(response => response.json()).then((commentsJson) => {
-        const commentsListElement = document.getElementById('comments-servlet');
-        commentsListElement.innerHTML = '';
-        for (i in commentsJson.comments) {
-            commentsListElement.appendChild(createListElement(commentsJson.comments[i]));
-        }
+      const commentsListElement = document.getElementById('comments-servlet');
+      commentsListElement.innerHTML = '';
+      for (i in commentsJson.comments) {
+        commentsListElement.appendChild(
+          createListElement(commentsJson.comments[i].comment, commentsJson.comments[i].username));
+      }
   });
 }
 
 /*
  * Creates an <li> element containing text. 
  */
-function createListElement(text) {
+function createListElement(text, username) {
   const liElement = document.createElement('li');
-  liElement.innerText = text;
+  liElement.innerText = text + " - by " + username;
   return liElement;
 }
