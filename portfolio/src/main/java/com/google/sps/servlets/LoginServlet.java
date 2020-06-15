@@ -38,8 +38,15 @@ public class LoginServlet extends HttpServlet {
       String urlToRedirectToAfterUserLogsOut = "/";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
-      out.println("<p>Hello " + userEmail + "!</p>");
-      out.println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+      out.println("<form action=\"/comments\" method=\"POST\">");
+      out.println("<p>Hello " + userEmail + "! Enter any comments (multiple comments are separated by enter):</p>");
+      out.println("<textarea name=\"text-input\" placeholder=\"Enter anything you like~\" rows=\"5\" cols=\"50\"></textarea>");
+      out.println("<br/><br/>");
+      out.println("<label for=\"username\">By user:</label>");
+      out.println("<input name=\"username\" id=\"username\" type=\"text\" value=\"" + userEmail + "\" />");
+      out.println("<br/><br/>");
+      out.println("<input type=\"submit\"/></form>");
+      out.println("<p>Alternatively, you can logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
     } else {
       String urlToRedirectToAfterUserLogsIn = "/";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
