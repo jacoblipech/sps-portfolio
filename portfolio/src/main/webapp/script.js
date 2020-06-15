@@ -48,13 +48,13 @@ function getDataContent() {
   * Fetch comments servlet to the page.
   */
 function getCommentsContent() {
-    fetch('/comments').then(response => response.json()).then((commentsJson) => {
-      const commentsListElement = document.getElementById('comments-servlet');
-      commentsListElement.innerHTML = '';
-      for (i in commentsJson.comments) {
-        commentsListElement.appendChild(
-          createListElement(commentsJson.comments[i].comment, commentsJson.comments[i].username));
-      }
+  fetch('/comments').then(response => response.json()).then((commentsJson) => {
+    const commentsListElement = document.getElementById('comments-servlet');
+    commentsListElement.innerHTML = '';
+    for (i in commentsJson.comments) {
+      commentsListElement.appendChild(
+        createListElement(commentsJson.comments[i].comment, commentsJson.comments[i].username));
+    }
   });
 }
 
