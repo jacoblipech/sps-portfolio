@@ -20,6 +20,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -64,7 +66,16 @@ public class CommentsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+
+    // Only logged-in users can post messages
+    if (!userService.isUserLoggedIn()) {
+      response.sendRedirect("/");
+      return;
+    }
+
     String text = getParameter(request, "text-input", "");
+    String email = userService.getCurrentUser().getEmail();
     String username = getParameter(request, "username", "");
 
     if (!text.isEmpty()) {
@@ -72,6 +83,7 @@ public class CommentsServlet extends HttpServlet {
       Entity commentEntity = new Entity("comment");
 
       commentEntity.setProperty("comment", text);
+      commentEntity.setProperty("email", email);
       commentEntity.setProperty("username", username);
       commentEntity.setProperty("timestamp", timestamp);
 
