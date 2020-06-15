@@ -17,6 +17,7 @@
  */
 document.addEventListener("DOMContentLoaded", function(){ 
   getCommentsContent(); 
+  isLoggedin();
 });
 
 /**
@@ -64,4 +65,12 @@ function createListElement(text, username) {
   const liElement = document.createElement('li');
   liElement.innerText = text + " - by " + username;
   return liElement;
+}
+/*
+ * Check if user is logged in.
+ */
+function isLoggedin() {
+  fetch('/login').then(response => response.text()).then(data => {
+    document.getElementById('comments-section').innerHTML = data;
+  });
 }

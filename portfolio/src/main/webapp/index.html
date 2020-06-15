@@ -55,21 +55,13 @@
         <button onclick="addRandomGreeting()">Hello</button>
         <div id="greeting-container"></div>
       </div>
-      <div id="comments-section">
-        <form action="/comments" method="POST">
-          <p>Enter any comments (multiple comments are separated by enter):</p>
-          <textarea name="text-input" placeholder="Enter anything you like~" rows="5" cols="50"></textarea>
-          <br/><br/>
-          <label for="username">By Username:</label>
-          <input name="username" id="username" type="text" />
-          <br/><br/>
-          <input type="submit" />
-        </form>
-        <br>
+      <div id="general-comments">
         <h2>
           Comments Section:
         </h2>
         <ol id="comments-servlet"></ol>
+      </div>
+      <div id="comments-section" action="/login">
       </div>
     </div>
   </body>
