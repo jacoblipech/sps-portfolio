@@ -68,15 +68,10 @@ public class CommentsServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
 
-    // Only logged-in users can post messages
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/");
-      return;
-    }
-
     String text = getParameter(request, "text-input", "");
     String email = userService.getCurrentUser().getEmail();
-    String username = getParameter(request, "username", "");
+    // assumes that all emails will have @ key in the string
+    String username = email.split("@")[0];
 
     if (!text.isEmpty()) {
       long timestamp = System.currentTimeMillis();

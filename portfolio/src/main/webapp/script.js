@@ -87,9 +87,6 @@ function commentsSectionLoggedIn(userEmail, logoutUrl) {
     <p>Hello ${userEmail}! Enter any comments (multiple comments are separated by enter):</p>
     <textarea name="text-input" placeholder="Enter anything you like~" rows="5" cols="50"></textarea>
     <br/><br/>
-    <label for="username">By user:</label>
-    <input name="username" id="username" type="text" value="userEmail"/>
-    <br/><br/>
     <input type="submit"/>
   </form>
   <p>Alternatively, you can logout <a href="${logoutUrl}">here</a>.</p>`;
