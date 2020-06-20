@@ -66,11 +66,35 @@ function createListElement(text, username) {
   liElement.innerText = text + " - by " + username;
   return liElement;
 }
+
 /*
  * Check if user is logged in.
  */
 function isLoggedin() {
-  fetch('/login').then(response => response.text()).then(data => {
-    document.getElementById('comments-section').innerHTML = data;
+  fetch('/login').then(response => response.json()).then(userJson => {
+    const commentsSection = document.getElementById('comments-section')
+    if (userJson.userEmail) {
+      commentsSection.innerHTML = commentsSectionLoggedIn(userJson.userEmail, userJson.url)
+    } else {
+      commentsSection.innerHTML = commentsSectionLoggedOut(userJson.url)
+    }
   });
+}
+
+function commentsSectionLoggedIn(userEmail, logoutUrl) {
+  return `
+  <form action="/comments" method="POST">
+    <p>Hello ${userEmail}! Enter any comments (multiple comments are separated by enter):</p>
+    <textarea name="text-input" placeholder="Enter anything you like~" rows="5" cols="50"></textarea>
+    <br/><br/>
+    <label for="username">By user:</label>
+    <input name="username" id="username" type="text" value="userEmail"/>
+    <br/><br/>
+    <input type="submit"/>
+  </form>
+  <p>Alternatively, you can logout <a href="${logoutUrl}">here</a>.</p>`;
+}
+
+function commentsSectionLoggedOut(loginUrl) {
+  return `<p>Hello, login <a href="${loginUrl}">here</a> to leave a comment.`
 }

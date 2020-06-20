@@ -17,7 +17,6 @@ package com.google.sps.servlets;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
+  private final String USER_JSON_DETAILS = "{ \"userEmail\": \"%s\", \"url\": \"%s\" }";
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html");
-    PrintWriter out = response.getWriter();
-
+    response.setContentType("application/json;");
     UserService userService = UserServiceFactory.getUserService();
 
     if (userService.isUserLoggedIn()) {
@@ -38,20 +37,14 @@ public class LoginServlet extends HttpServlet {
       String urlToRedirectToAfterUserLogsOut = "/";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
-      out.println("<form action=\"/comments\" method=\"POST\">");
-      out.println("<p>Hello " + userEmail + "! Enter any comments (multiple comments are separated by enter):</p>");
-      out.println("<textarea name=\"text-input\" placeholder=\"Enter anything you like~\" rows=\"5\" cols=\"50\"></textarea>");
-      out.println("<br/><br/>");
-      out.println("<label for=\"username\">By user:</label>");
-      out.println("<input name=\"username\" id=\"username\" type=\"text\" value=\"" + userEmail + "\" />");
-      out.println("<br/><br/>");
-      out.println("<input type=\"submit\"/></form>");
-      out.println("<p>Alternatively, you can logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+      String json = String.format(USER_JSON_DETAILS, userEmail, logoutUrl);
+      response.getWriter().println(json);
     } else {
       String urlToRedirectToAfterUserLogsIn = "/";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
-      out.println("<p>Hello, login <a href=\"" + loginUrl + "\">here</a> to leave a comment.");
+      String json = String.format(USER_JSON_DETAILS, "", loginUrl);
+      response.getWriter().println(json);
     }
   }
 }
