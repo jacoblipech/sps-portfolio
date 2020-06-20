@@ -97,8 +97,7 @@ public class CommentsServlet extends HttpServlet {
    * Converts the comments array into a JSON string using Gson.
    */
   private String getCommentsJson(List<Comment> comments) {
-    Gson gson = new Gson();
-    return String.format("{ \"comments\": %s }", gson.toJson(comments));
+    return String.format("{ \"comments\": %s }", new Gson().toJson(comments));
   }
 
   /**
