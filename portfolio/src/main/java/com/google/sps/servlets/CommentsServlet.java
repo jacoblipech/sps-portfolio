@@ -20,6 +20,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -64,14 +66,19 @@ public class CommentsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+
     String text = getParameter(request, "text-input", "");
-    String username = getParameter(request, "username", "");
+    String email = userService.getCurrentUser().getEmail();
+    // assumes that all emails will have @ key in the string
+    String username = email.split("@")[0];
 
     if (!text.isEmpty()) {
       long timestamp = System.currentTimeMillis();
       Entity commentEntity = new Entity("comment");
 
       commentEntity.setProperty("comment", text);
+      commentEntity.setProperty("email", email);
       commentEntity.setProperty("username", username);
       commentEntity.setProperty("timestamp", timestamp);
 
@@ -85,8 +92,7 @@ public class CommentsServlet extends HttpServlet {
    * Converts the comments array into a JSON string using Gson.
    */
   private String getCommentsJson(List<Comment> comments) {
-    Gson gson = new Gson();
-    return String.format("{ \"comments\": %s }", gson.toJson(comments));
+    return String.format("{ \"comments\": %s }", new Gson().toJson(comments));
   }
 
   /**

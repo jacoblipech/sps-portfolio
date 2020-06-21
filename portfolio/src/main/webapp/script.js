@@ -17,6 +17,7 @@
  */
 document.addEventListener("DOMContentLoaded", function(){ 
   getCommentsContent(); 
+  isLoggedin();
 });
 
 /**
@@ -47,13 +48,13 @@ function getDataContent() {
   * Fetch comments servlet to the page.
   */
 function getCommentsContent() {
-    fetch('/comments').then(response => response.json()).then((commentsJson) => {
-      const commentsListElement = document.getElementById('comments-servlet');
-      commentsListElement.innerHTML = '';
-      for (i in commentsJson.comments) {
-        commentsListElement.appendChild(
-          createListElement(commentsJson.comments[i].comment, commentsJson.comments[i].username));
-      }
+  fetch('/comments').then(response => response.json()).then((commentsJson) => {
+    const commentsListElement = document.getElementById('comments-servlet');
+    commentsListElement.innerHTML = '';
+    for (i in commentsJson.comments) {
+      commentsListElement.appendChild(
+        createListElement(commentsJson.comments[i].comment, commentsJson.comments[i].username));
+    }
   });
 }
 
@@ -64,4 +65,33 @@ function createListElement(text, username) {
   const liElement = document.createElement('li');
   liElement.innerText = text + " - by " + username;
   return liElement;
+}
+
+/*
+ * Check if user is logged in.
+ */
+function isLoggedin() {
+  fetch('/login').then(response => response.json()).then(userJson => {
+    const commentsSection = document.getElementById('comments-section')
+    if (userJson.userEmail) {
+      commentsSection.innerHTML = commentsSectionLoggedIn(userJson.userEmail, userJson.url)
+    } else {
+      commentsSection.innerHTML = commentsSectionLoggedOut(userJson.url)
+    }
+  });
+}
+
+function commentsSectionLoggedIn(userEmail, logoutUrl) {
+  return `
+  <form action="/comments" method="POST">
+    <p>Hello ${userEmail}! Enter any comments (multiple comments are separated by enter):</p>
+    <textarea name="text-input" placeholder="Enter anything you like~" rows="5" cols="50"></textarea>
+    <br/><br/>
+    <input type="submit"/>
+  </form>
+  <p>Alternatively, you can logout <a href="${logoutUrl}">here</a>.</p>`;
+}
+
+function commentsSectionLoggedOut(loginUrl) {
+  return `<p>Hello, login <a href="${loginUrl}">here</a> to leave a comment.`
 }
