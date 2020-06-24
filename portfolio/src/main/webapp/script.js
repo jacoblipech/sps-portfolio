@@ -57,9 +57,24 @@ function getCommentsContent() {
       const imageUrl = commentsJson.comments[i].imageUrl
       if (imageUrl != null) {
         commentsListElement.innerHTML += `<img src="${imageUrl}">`;
+        addImageLabels(commentsJson.comments[i].imageLabels, commentsListElement)
       }
     }
   });
+}
+
+/*
+ * Creates an a paragraph of image text labels.
+ */
+function addImageLabels(imageLabels, commentsListElement) {
+  if (imageLabels != null) {
+    imageLabelsText = "<p>This is a/an: "
+    for (i in imageLabels) {
+      imageLabelsText += imageLabels[i] + ", "
+    }
+    imageLabelsText = imageLabelsText.substring(0, imageLabelsText.length - 2) + " image </p>"
+    commentsListElement.innerHTML += imageLabelsText
+  }
 }
 
 /*
