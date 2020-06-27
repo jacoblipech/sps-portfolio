@@ -72,6 +72,7 @@ function addImageLabels(imageLabels, commentsListElement) {
     for (i in imageLabels) {
       imageLabelsText += imageLabels[i] + ", "
     }
+    // added substring to remove the extra space and comma from concating
     imageLabelsText = imageLabelsText.substring(0, imageLabelsText.length - 2) + " image </p>"
     commentsListElement.innerHTML += imageLabelsText
   }

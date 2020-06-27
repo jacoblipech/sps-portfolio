@@ -40,6 +40,7 @@ import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.gson.Gson;
 import com.google.protobuf.ByteString;
 import com.google.sps.data.Comment;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -49,12 +50,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /** Servlet that returns comments content. */
 @WebServlet("/comments")
 public class CommentsServlet extends HttpServlet {
 
   private DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
+  private Feature feature = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
+  private ImageAnnotatorClient client;
   private double THRESHOLD_ACCURACY = 0.80;
 
   @Override
@@ -98,8 +102,8 @@ public class CommentsServlet extends HttpServlet {
     // Get the BlobKey that points to the image uploaded by the user.
     BlobKey blobKey = getBlobKey(request, "imageFile");
     // Get the labels of the image that the user uploaded.
-    byte[] blobBytes = getBlobBytes(blobKey);
-    List<String> imageLabels = getImageLabels(blobBytes);
+    ByteString blobByteString = getBlobByteString(blobKey);
+    List<String> imageLabels = getImageLabels(blobByteString);
 
     if (!text.isEmpty()) {
       long timestamp = System.currentTimeMillis();
@@ -188,44 +192,43 @@ public class CommentsServlet extends HttpServlet {
    * Blobstore stores files as binary data. This function retrieves the binary data stored at the
    * BlobKey parameter.
    */
-  private byte[] getBlobBytes(BlobKey blobKey) throws IOException {
+  private ByteString getBlobByteString(BlobKey blobKey) throws IOException {
     BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
     ByteArrayOutputStream outputBytes = new ByteArrayOutputStream();
 
     int fetchSize = BlobstoreService.MAX_BLOB_FETCH_SIZE;
     long currentByteIndex = 0;
-    boolean continueReading = true;
-    while (continueReading) {
+    while (true) {
       // end index is inclusive, so we have to subtract 1 to get fetchSize bytes
-      byte[] b =
-          blobstoreService.fetchData(blobKey, currentByteIndex, currentByteIndex + fetchSize - 1);
+      long endIndex = currentByteIndex + fetchSize - 1;
+      byte[] b = blobstoreService.fetchData(blobKey, currentByteIndex, endIndex);
       outputBytes.write(b);
 
       // if we read fewer bytes than we requested, then we reached the end
       if (b.length < fetchSize) {
-        continueReading = false;
+        break;
       }
-
       currentByteIndex += fetchSize;
     }
-    return outputBytes.toByteArray();
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(outputBytes.toByteArray());
+    // more efficient way of returning object
+    return ByteString.readFrom(inputStream);
   }
 
   /**
    * Uses the Google Cloud Vision API to generate a list of labels that apply to the image
-   * represented by the binary data stored in imgBytes.
+   * represented by the binary data stored in imgByteString.
    */
-  private List<String> getImageLabels(byte[] imgBytes) throws IOException {
-    ByteString byteString = ByteString.copyFrom(imgBytes);
-    Image image = Image.newBuilder().setContent(byteString).build();
+  private List<String> getImageLabels(ByteString imgByteString) throws IOException {
+    Image image = Image.newBuilder().setContent(imgByteString).build();
 
-    Feature feature = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
     AnnotateImageRequest request =
         AnnotateImageRequest.newBuilder().addFeatures(feature).setImage(image).build();
     List<AnnotateImageRequest> requests = new ArrayList<>();
     requests.add(request);
 
-    ImageAnnotatorClient client = ImageAnnotatorClient.create();
+    // need to initialize within the method to throw IOException
+    client = ImageAnnotatorClient.create();
     BatchAnnotateImagesResponse batchResponse = client.batchAnnotateImages(requests);
     client.close();
     List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
@@ -233,16 +236,13 @@ public class CommentsServlet extends HttpServlet {
 
     if (imageResponse.hasError()) {
       System.err.println("Error getting image labels: " + imageResponse.getError().getMessage());
-      return null;
+      return new ArrayList<String>();
     }
-
-    List<String> imageLabels = new ArrayList<>();
-    for (EntityAnnotation label : imageResponse.getLabelAnnotationsList()){
-      if (label.getScore() > THRESHOLD_ACCURACY) {
-        imageLabels.add(label.getDescription());
-      }
-    }
-
-    return imageLabels;
+    
+    return imageResponse.getLabelAnnotationsList()
+            .stream()
+            .filter(label -> label.getScore() > THRESHOLD_ACCURACY)
+            .map(label -> label.getDescription())
+            .collect(Collectors.toList());
   }
 }
