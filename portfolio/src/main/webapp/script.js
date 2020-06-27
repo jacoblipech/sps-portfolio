@@ -91,7 +91,7 @@ function createListElement(text, username) {
  * Check if user is logged in.
  */
 function isLoggedin() {
-  fetch('/login').then(response => response.json()).then(userJson => {
+  fetch('/commentForm').then(response => response.json()).then(userJson => {
     const commentsSection = document.getElementById('comments-section')
     if (userJson.userEmail) {
       commentsSection.innerHTML = commentsSectionLoggedIn(userJson.userEmail, userJson.url, userJson.uploadUrl)
