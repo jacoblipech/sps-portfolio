@@ -14,18 +14,24 @@
 
 package com.google.sps.data;
 
+import java.util.List;
+
 /** An item on a todo list. */
 public final class Comment {
 
   private final long id;
   private final String comment;
   private final String username;
+  private final String imageUrl;
+  private final List<String> imageLabels;
   private final long timestamp;
 
-  public Comment(long id, String comment, String username, long timestamp) {
+  public Comment(long id, String comment, String username, String imageUrl, List<String> imageLabels, long timestamp) {
     this.id = id;
     this.comment = comment;
     this.username = username;
+    this.imageUrl = imageUrl;
+    this.imageLabels = imageLabels;
     this.timestamp = timestamp;
   }
 }

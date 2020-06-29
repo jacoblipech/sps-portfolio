@@ -54,8 +54,28 @@ function getCommentsContent() {
     for (i in commentsJson.comments) {
       commentsListElement.appendChild(
         createListElement(commentsJson.comments[i].comment, commentsJson.comments[i].username));
+      const imageUrl = commentsJson.comments[i].imageUrl
+      if (imageUrl != null) {
+        commentsListElement.innerHTML += `<img src="${imageUrl}">`;
+        addImageLabels(commentsJson.comments[i].imageLabels, commentsListElement)
+      }
     }
   });
+}
+
+/*
+ * Creates an a paragraph of image text labels.
+ */
+function addImageLabels(imageLabels, commentsListElement) {
+  if (imageLabels != null) {
+    imageLabelsText = "<p>This is a/an: "
+    for (i in imageLabels) {
+      imageLabelsText += imageLabels[i] + ", "
+    }
+    // added substring to remove the extra space and comma from concating
+    imageLabelsText = imageLabelsText.substring(0, imageLabelsText.length - 2) + " image </p>"
+    commentsListElement.innerHTML += imageLabelsText
+  }
 }
 
 /*
@@ -71,22 +91,25 @@ function createListElement(text, username) {
  * Check if user is logged in.
  */
 function isLoggedin() {
-  fetch('/login').then(response => response.json()).then(userJson => {
+  fetch('/commentForm').then(response => response.json()).then(userJson => {
     const commentsSection = document.getElementById('comments-section')
     if (userJson.userEmail) {
-      commentsSection.innerHTML = commentsSectionLoggedIn(userJson.userEmail, userJson.url)
+      commentsSection.innerHTML = commentsSectionLoggedIn(userJson.userEmail, userJson.url, userJson.uploadUrl)
     } else {
       commentsSection.innerHTML = commentsSectionLoggedOut(userJson.url)
     }
   });
 }
 
-function commentsSectionLoggedIn(userEmail, logoutUrl) {
+function commentsSectionLoggedIn(userEmail, logoutUrl, uploadUrl) {
   return `
-  <form action="/comments" method="POST">
+  <form method="POST" enctype="multipart/form-data" action="${uploadUrl}" method="POST">
     <p>Hello ${userEmail}! Enter any comments (multiple comments are separated by enter):</p>
     <textarea name="text-input" placeholder="Enter anything you like~" rows="5" cols="50"></textarea>
-    <br/><br/>
+    <br/>
+    <label for="imageFile">Select a image file:</label>
+    <input type="file" id="imageFile" name="imageFile"><br><br>
+    <br/>
     <input type="submit"/>
   </form>
   <p>Alternatively, you can logout <a href="${logoutUrl}">here</a>.</p>`;
