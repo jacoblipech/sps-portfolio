@@ -43,7 +43,7 @@ public final class FindMeetingQuery {
 
     // check if each event's attendees clash with the request attendees sorted by starting time
     List<TimeRange> eventTimes = events.stream()
-                                      .filter(event -> isAffectedEvent(event.getAttendees(), reqAttendees))
+                                      .filter(event -> eventContainsRequiredAttendee(event.getAttendees(), reqAttendees))
                                       .map(event -> event.getWhen())
                                       .sorted(TimeRange.ORDER_BY_START)
                                       .collect(Collectors.toList());
@@ -55,7 +55,7 @@ public final class FindMeetingQuery {
 
     int possibleStartTime = TimeRange.START_OF_DAY;
 
-    // check first event starting time
+    // consider the time window between the start of the day and the first event.
     int eventStartTime = eventTimes.get(0).start();
     addPossibleTime(possibleStartTime, eventStartTime, reqDuration);
     // sets the end time of first event to the start time of the possible slot
@@ -71,6 +71,7 @@ public final class FindMeetingQuery {
       possibleStartTime = Math.max(prevEventEnd, currEventEnd);
     }
 
+    // include of the time from last event to the end of the day
     addPossibleTime(possibleStartTime, TimeRange.END_OF_DAY + 1, reqDuration);
     return possibleMeetingTime;
   }
@@ -85,14 +86,9 @@ public final class FindMeetingQuery {
   }
 
   /**
-   * Checks to ensure that events are added only when attendee overlaps.
+   * Checks whether an event contains a required attendee.
    */
-  private Boolean isAffectedEvent(Set<String> eventAttendees, Collection<String> reqAttendees) {
-    for (String attendee : reqAttendees) {
-      if (eventAttendees.contains(attendee)) {
-        return true;
-      }
-    }
-    return false;
+  private Boolean eventContainsRequiredAttendee(Set<String> eventAttendees, Collection<String> reqAttendees) {
+    return !Collections.disjoint(eventAttendees, reqAttendees);
   }
 }
